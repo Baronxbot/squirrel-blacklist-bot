@@ -1,4 +1,4 @@
-#  @SquirrelNetwork blacklist checker bot
+#  [SquirrelNetwork](https://github.com/Squirrel-Network) blacklist checker bot
 
 ## How to start?
 
