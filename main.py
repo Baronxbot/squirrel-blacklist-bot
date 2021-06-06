@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__copyright__ = "Copyright 2020, SquirrelNetwork"
+__copyright__ = "Copyright 2021, SquirrelNetwork"
 __credits__ = ["https://github.com/SalvatoreCalo"]
 __license__ = "GPL 3.0"
 __version__ = "1.0.0"
@@ -46,7 +46,7 @@ def update_start(update, context):
       print("A")
       buttons.append(InlineKeyboardButton('Indietro', callback_data='back'))
       menu = build_menu(buttons,2)
-      query.edit_message_text("COmandi del bot: \n\n /checkme: controlla se sei in blacklist o no \n\n /check id: check if a user is in our blacklist", reply_markup=InlineKeyboardMarkup(menu))
+      query.edit_message_text("Comandi del bot: \n\n /checkme: controlla se sei in blacklist o no \n\n /check id: check if a user is in our blacklist", reply_markup=InlineKeyboardMarkup(menu))
     elif q == 'back':
       print("B")
       buttons.append(InlineKeyboardButton('HOW IT WORKS?', callback_data='info'))
@@ -58,8 +58,9 @@ def checkme(update, context):
     user = update.effective_message.from_user
     index = user.id
     payload = {'key1': 'value1', 'key2': 'value2'}
-    api = requests.get('https://api.nebula.squirrel-network.online/v1/blacklist/{}'.format(index), params=payload)
-    if payload['key1'] != '{"error":"The user was not superbanned or you entered an incorrect id"}':
+    api_nebula = requests.get('https://api.nebula.squirrel-network.online/v1/blacklist/{}'.format(index), params=payload)
+    api_cas =  requests.get('https://api.cas.chat/check?user_id={}'.format(index), params=payload)
+    if payload['key1'] is not False:
       update.message.reply_text("Ben fatto! Attualmente non sei nella nostra blacklist! :)")
     else: 
       update.message.reply_text("You are in our blacklist!. :(")
@@ -69,13 +70,14 @@ def check(update, context):
     user = update.effective_message.from_user
     index = context.args[0]
     payload = {'key1': 'value1', 'key2': 'value2'}
-    api = requests.get('https://api.nebula.squirrel-network.online/v1/blacklist/{}'.format(index), params=payload)
-    try:
-      if payload['key1'] != '{"error":"The user was not superbanned or you entered an incorrect id"}':
-        update.message.reply_text("Questo id non sembra essere presente nella nostra blacklist")
+    api_nebula = requests.get('https://api.nebula.squirrel-network.online/v1/blacklist/{}'.format(index), params=payload)
+    api_cas =  requests.get('https://api.cas.chat/check?user_id={}'.format(index), params=payload)
+    if index is not None:
+      if payload['key1'] is not False:
+        update.message.reply_text("Questo id non sembra essere presente nella nostra blacklist :)")
       else: 
         update.message.reply_text("Questo utente è nella nostra blacklist. :(")
-    except (IndexError, ValueError):
+    else:
         update.message.reply_text('si prega di inserire un id')
 
 def main():
@@ -105,4 +107,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
